@@ -12,12 +12,20 @@ def emotion_detector(text_to_analyse):
 
     formatted_response = json.loads(response.text)
 
-    anger_score = formatted_response['emotionPredictions'][0]['emotion']['anger']
-    disgust_score = formatted_response['emotionPredictions'][0]['emotion']['disgust']
-    fear_score = formatted_response['emotionPredictions'][0]['emotion']['fear']
-    joy_score = formatted_response['emotionPredictions'][0]['emotion']['joy']
-    sadness_score = formatted_response['emotionPredictions'][0]['emotion']['sadness']
-    
+    if response.status_code == 200:
+        anger_score = formatted_response['emotionPredictions'][0]['emotion']['anger']
+        disgust_score = formatted_response['emotionPredictions'][0]['emotion']['disgust']
+        fear_score = formatted_response['emotionPredictions'][0]['emotion']['fear']
+        joy_score = formatted_response['emotionPredictions'][0]['emotion']['joy']
+        sadness_score = formatted_response['emotionPredictions'][0]['emotion']['sadness']
+
+    elif response.status_code == 400:
+        anger_score = None
+        disgust_score = None
+        fear_score = None
+        joy_score = None
+        sadness_score = None
+
     emotions_scores = {
         'anger': anger_score,
         'disgust': disgust_score,
@@ -27,7 +35,10 @@ def emotion_detector(text_to_analyse):
         'dominant_emotion': 0
     }
 
-    emotions_scores['dominant_emotion'] = max(emotions_scores, key=emotions_scores.get)
+    if response.status_code == 200:
+        emotions_scores['dominant_emotion'] = max(emotions_scores, key=emotions_scores.get)
+    elif response.status_code == 400:
+        emotions_scores['dominant_emotion'] = None
 
     return emotions_scores
 
